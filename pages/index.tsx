@@ -6,6 +6,7 @@ const Home: NextPage = () => {
   const weeks: string[] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const [days, setDays] = React.useState<number[]>([]);
   const [count, setCount] = React.useState<number>(0);
+  const [selected, setSelected] = React.useState<number>(0);
   const [heading, setHeading] = React.useState<string>(
     new Date().toLocaleString("default", { month: "long" }) +
       " " +
@@ -24,8 +25,27 @@ const Home: NextPage = () => {
         date.setDate(date.getDate() + i + num * 7);
         dates.push(date);
       }
+      setHeading(
+        dates[0].toLocaleString("default", { month: "long" }) +
+          " " +
+          dates[0].getDate() +
+          " " +
+          dates[0].getFullYear()
+      );
+
       setDays(dates.map((date) => date.getDate()));
     };
+  };
+
+  const handleClick = (day: number) => {
+    setHeading(
+      new Date().toLocaleString("default", { month: "long" }) +
+        " " +
+        day +
+        ", " +
+        new Date().getFullYear()
+    );
+    setSelected(day);
   };
 
   React.useEffect(() => {
@@ -48,16 +68,10 @@ const Home: NextPage = () => {
             <div
               key={i}
               className={styles.gridItem}
-              onClick={() =>
-                setHeading(
-                  new Date().toLocaleString("default", { month: "long" }) +
-                    " " +
-                    day + ", " +
-                    new Date().getFullYear()
-                )
-              }
+              onClick={() => handleClick(day)}
             >
-              {day === new Date().getDate() && count === 0 ? (
+              {selected === day ||
+              (day === new Date().getDate() && count === 0) ? (
                 <div className={styles.isActive}>{day}</div>
               ) : (
                 day
@@ -71,7 +85,13 @@ const Home: NextPage = () => {
             Last Week
           </button>
 
-          <button className={styles.button} onClick={() => setCount(0)}>
+          <button
+            className={styles.button}
+            onClick={() => {
+              setCount(0);
+              setSelected(0);
+            }}
+          >
             This Week
           </button>
 
